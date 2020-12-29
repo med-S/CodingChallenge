@@ -3,37 +3,36 @@ import ApiClient from './../../src/utils/api-client';
 import InfiniteLoader from './infiniteScroller';
 import RepoElement from './RepoElement';
 import Loading from './Loading';
+import PageHelper from '../utils/pageHelper';
 
 
 export class Home extends Component {
-    // static displayName = Home.name;
     constructor(props) {
         super(props)
+        var date = new Date();
+        console.log(date);
         this.state = {
-            PageNum: 1,
             data: [],
-            incompleteResult: false
+            incompleteResult: false,
+            date: new Date(date.getFullYear(), date.getMonth() - 1, date.getDate() + 1).toISOString().slice(0, 10),
         }
     }
 
-    componentDidMount() {
-
-        this.loadMore(0);
-
-    }
-
     loadMore = (page) => {
-        ApiClient.get(`https://api.github.com/search/repositories?q=created:>2017-10-22&sort=stars&order=desc&page=${page} `, {})
+        console.log(page)
+        ApiClient.get(`https://api.github.com/search/repositories?q=created:>${this.state.date}&sort=stars&order=desc&page=${page} `, {})
             .then(response => {
 
                 var updatingData = this.state.data;
                 response.data.items.forEach(e => updatingData.push(e));
 
                 this.setState({
-                    PageNum: this.state.PageNum + 1,
                     data: updatingData,
                     incompleteResult: response.data.incomplete_results,
                 })
+            })
+            .catch(error => {
+                alert(error);
             })
 
 
@@ -48,31 +47,31 @@ export class Home extends Component {
                     Name={Repo.name}
                     Avatar={Repo.owner.avatar_url}
                     Discription={Repo.description}
-                    Stars={Repo.stargazers_count}
-                    Issues={Repo.open_issues_count}
+                    Stars={PageHelper.NumberInKs(Repo.stargazers_count)}
+                    Issues={PageHelper.NumberInKs(Repo.open_issues_count)}
                     PushDate={Repo.pushed_at}
+                    UserName={Repo.owner.login}
                 />
             )
-        })
+        });
         return ListCards;
     }
 
     render() {
         var ListCards = this.renderRepoElements();
         return (
-            (this.state.data.length > 0 ?
-                <InfiniteLoader
-                    LoadMore={(page) => this.loadMore(page)}
-                    Length={this.state.data.length}
-                    HasMore={this.state.incompleteResult}
-                    Loader={<Loading />}
-                    UseWindow={true}
-                    Data={ListCards}
-                >
-                </InfiniteLoader>
-                :
-                <Loading Center={true} />
-            )
+
+            <InfiniteLoader
+                LoadMore={page => this.loadMore(page)}
+                Length={this.state.data.length}
+                HasMore={true}
+                Loader={<Loading />}
+                UseWindow={true}
+                Data={ListCards}
+                StartPage={1}
+            >
+            </InfiniteLoader>
+
         );
     }
 }

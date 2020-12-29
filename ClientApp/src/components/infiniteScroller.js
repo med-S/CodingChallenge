@@ -9,17 +9,18 @@ export default class InfiniteLoader extends React.Component {
     }
     render() {
         return (
-                <InfiniteScroll
-                    dataLength={this.props.Length}
-                    pageStart={0}
-                    loadMore={this.props.LoadMore}
-                    hasMore={this.props.HasMore}
-                    loader={<div className="loader" key={0}>Loading ...</div>}
-                    useWindow={this.props.UseWindow}
-                    //getScrollParent={() => this.scrollParentRef}
-                >
-                    {this.props.Data}
-                </InfiniteScroll>
-      )
+            <InfiniteScroll
+                dataLength={this.props.Length}
+                startPage={this.props.StartPage}
+                loadMore={this.props.LoadMore}
+                hasMore={this.props.HasMore}
+                loader={this.props.Loader}
+                useWindow={this.props.UseWindow}
+                loadFirstSetOnInit={true}
+            //getScrollParent={() => this.scrollParentRef}
+            >
+                {this.props.Data}
+            </InfiniteScroll>
+        )
     }
 }
