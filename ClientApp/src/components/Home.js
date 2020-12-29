@@ -7,10 +7,10 @@ import PageHelper from '../utils/pageHelper';
 
 
 export class Home extends Component {
+
     constructor(props) {
         super(props)
         var date = new Date();
-        console.log(date);
         this.state = {
             data: [],
             incompleteResult: false,
@@ -19,10 +19,8 @@ export class Home extends Component {
     }
 
     loadMore = (page) => {
-        console.log(page)
         ApiClient.get(`https://api.github.com/search/repositories?q=created:>${this.state.date}&sort=stars&order=desc&page=${page} `, {})
             .then(response => {
-
                 var updatingData = this.state.data;
                 response.data.items.forEach(e => updatingData.push(e));
 
@@ -34,16 +32,15 @@ export class Home extends Component {
             .catch(error => {
                 alert(error);
             })
-
-
     };
 
     renderRepoElements = () => {
         var ListCards = [];
-        this.state.data.map((Repo, i) => {
+        this.state.data.map((Repo, i) =>
             ListCards.push(
                 <RepoElement
                     id={i}
+                    key={i}
                     Name={Repo.name}
                     Avatar={Repo.owner.avatar_url}
                     Discription={Repo.description}
@@ -52,16 +49,15 @@ export class Home extends Component {
                     PushDate={Repo.pushed_at}
                     UserName={Repo.owner.login}
                 />
-            )
-        });
+            ));
         return ListCards;
     }
 
     render() {
         var ListCards = this.renderRepoElements();
         return (
-
             <InfiniteLoader
+                Id="element"
                 LoadMore={page => this.loadMore(page)}
                 Length={this.state.data.length}
                 HasMore={true}
@@ -71,7 +67,6 @@ export class Home extends Component {
                 StartPage={1}
             >
             </InfiniteLoader>
-
         );
     }
 }

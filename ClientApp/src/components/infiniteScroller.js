@@ -2,14 +2,11 @@
 import InfiniteScroll from 'react-infinite-scroll-loader-y'
 
 export default class InfiniteLoader extends React.Component {
-    constructor(props) {
-        super(props);
-
-
-    }
+   
     render() {
         return (
             <InfiniteScroll
+                id={this.props.Id}
                 dataLength={this.props.Length}
                 startPage={this.props.StartPage}
                 loadMore={this.props.LoadMore}
